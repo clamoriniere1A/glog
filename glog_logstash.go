@@ -17,8 +17,6 @@
 package glog
 
 import (
-	"bytes"
-	"encoding/json"
 	"flag"
 	"io"
 	"os"
@@ -51,9 +49,9 @@ type logstashPublisher struct {
 
 // WriteWithStack decodes the data and writes a logstash json event
 func (p logstashPublisher) WriteWithStack(data []byte, stack []byte) {
-	buffer := new(bytes.Buffer)
-	glogJSON{writer: buffer, encoder: json.NewEncoder(buffer)}.WriteWithStack(data, stack)
-	p.writer.Write(buffer.Bytes())
+	buf, _ := WriteWithStack(data, stack)
+	p.writer.Write(buf)
+	p.writer.Write([]byte("\n"))
 }
 
 // flush waits until all pending messages are written by the asyncWriter.
